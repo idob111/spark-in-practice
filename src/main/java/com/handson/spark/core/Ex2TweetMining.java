@@ -6,6 +6,8 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import scala.Tuple2;
 
 import java.util.List;
@@ -54,7 +56,7 @@ public class Ex2TweetMining {
   /**
    *  Find all the persons mentioned on tweets (case sensitive)
    */
-  public JavaRDD<String> mentionOnTweet() {
+  public Dataset<Row> mentionOnTweet() {
     JavaRDD<Tweet> tweets = loadData();
 
     // You want to return an RDD with the mentions

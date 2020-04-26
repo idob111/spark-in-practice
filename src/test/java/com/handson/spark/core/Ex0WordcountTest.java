@@ -3,7 +3,10 @@ package com.handson.spark.core;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.sql.Dataset;
 import org.junit.*;
+
+import static org.junit.Assert.*;
 
 
 public class Ex0WordcountTest {
@@ -18,11 +21,11 @@ public class Ex0WordcountTest {
   @Test
   public void loadData() {
     // run
-    JavaRDD<String> words = ex0Wordcount.loadData();
+    Long wordCount = ex0Wordcount.wordCount();
 
     // assert
     // this test is already green but see how we download the data in the loadData method
-    Assert.assertEquals(809, words.count());
+    assertEquals(809L, wordCount,0);
   }
 
   @Test
@@ -31,7 +34,7 @@ public class Ex0WordcountTest {
     JavaPairRDD<String, Integer> couples = ex0Wordcount.wordcount();
 
     // assert
-    Assert.assertEquals(381, couples.count());
+    assertEquals(381, couples.count());
   }
 
   @Test
@@ -40,6 +43,6 @@ public class Ex0WordcountTest {
     JavaPairRDD<String, Integer> filtered = ex0Wordcount.filterOnWordcount();
 
     // assert
-    Assert.assertEquals(26, filtered.count());
+    assertEquals(26, filtered.count());
   }
 }

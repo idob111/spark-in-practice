@@ -6,6 +6,12 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.collect_list;
 
 /**
  *  The Java Spark API documentation: http://spark.apache.org/docs/latest/api/java/index.html
@@ -27,52 +33,44 @@ import org.apache.spark.api.java.JavaSparkContext;
  */
 public class Ex1UserMining {
 
-  private static String pathToFile = "data/reduced-tweets.json";
+    private static String pathToFile = "data/reduced-tweets.json";
 
-  /**
-   *  Load the data from the json file and return an RDD of Tweet
-   */
-  public JavaRDD<Tweet> loadData() {
-    // Create spark configuration and spark context
-    SparkConf conf = new SparkConf()
-        .setAppName("User mining")
-        .set("spark.driver.allowMultipleContexts", "true")
-        .setMaster("local[*]");
+    /**
+     *  Load the data from the json file and return an RDD of Tweet
+     */
+    private Dataset<Row> loadData() {
+      // Create spark configuration and spark context
 
-    JavaSparkContext sc = new JavaSparkContext(conf);
+        SparkSession conf = new SparkSession
+                .Builder()
+                .appName("Tweet")
+                .master("local[*]").getOrCreate(); // here local mode. And * means you will use as much as you have cores.
 
-    // Load the data and parse it into a Tweet.
-    // Look at the Tweet Object in the TweetUtils class.
-    JavaRDD<Tweet> tweets = sc.textFile(pathToFile)
-                              .map(line -> Parse.parseJsonToTweet(line));
+        Dataset<Row> tweets=conf.read().json(pathToFile);
 
-    return tweets;
-  }
+        return tweets;
+    }
 
-  /**
-   *   For each user return all his tweets
-   */
-  public JavaPairRDD<String, Iterable<Tweet>> tweetsByUser() {
-    JavaRDD<Tweet> tweets = loadData();
+    /**
+     *   For each user return all his tweets
+     */
+    public Dataset<Row> tweetsByUser() {
+      Dataset<Row> tweets = loadData();
 
-    // TODO write code here
-    // Hint: the Spark API provides a groupBy method
-    JavaPairRDD<String, Iterable<Tweet>> tweetsByUser = null;
+      Dataset<Row> tweetsByUser=tweets.groupBy(col("user")).agg(collect_list(col("text")));
 
-    return tweetsByUser;
-  }
+      return tweetsByUser;
+    }
 
-  /**
-   *  Compute the number of tweets by user
-   */
-  public JavaPairRDD<String, Integer> tweetByUserNumber() {
-    JavaRDD<Tweet> tweets = loadData();
+    /**
+     *  Compute the number of tweets by user
+     */
+    public Dataset<Row> tweetByUserNumber() {
+      Dataset<Row> tweets = loadData();
 
-    // TODO write code here
-    // Hint: think about what you did in the wordcount example
-    JavaPairRDD<String, Integer> count = null;
+      Dataset<Row> tweetsByUser=tweets.groupBy(col("user")).count();
 
-    return count;
-  }
+      return tweetsByUser;
+    }
 
 }
