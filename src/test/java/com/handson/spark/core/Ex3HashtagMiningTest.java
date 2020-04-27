@@ -2,13 +2,13 @@ package com.handson.spark.core;
 
 
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import scala.Tuple2;
 
-import java.util.List;
+import static org.apache.spark.sql.functions.col;
 
 public class Ex3HashtagMiningTest {
 
@@ -22,35 +22,35 @@ public class Ex3HashtagMiningTest {
   @Test
   public void mentionOnTweet() {
     // run
-    JavaRDD<String> mentions = ex3HashtagMining.hashtagMentionedOnTweet();
+    Dataset<Row> mentions = ex3HashtagMining.hashtagMentionedOnTweet();
 
     // assert
     Assert.assertEquals(5262, mentions.count());
-    JavaRDD<String> filter = mentions.filter(mention -> "#youtube".equals(mention));
+    Dataset<Row> filter = mentions.where(col("mentions").equalTo("#youtube"));
     Assert.assertEquals(2, filter.count());
   }
 
   @Test
   public void countMentions() {
     // run
-    JavaPairRDD<String, Integer> counts = ex3HashtagMining.countMentions();
+    Dataset<Row> counts = ex3HashtagMining.countMentions();
 
     // assert
     Assert.assertEquals(2461, counts.count());
-    JavaPairRDD<String, Integer> filter = counts.filter(mention -> "#youtube".equals(mention._1()));
+    Dataset<Row> filter = counts.filter(col("mentions").equalTo("#youtube"));
     Assert.assertEquals(1, filter.count());
-    Assert.assertEquals(2, filter.first()._2().intValue());
+    Assert.assertEquals(2L, filter.first().getLong(1));
   }
 
   @Test
   public void mostMentioned() {
     // run
-    List<Tuple2<Integer, String>> mostMentioned = ex3HashtagMining.top10HashTags();
+    Dataset<Row> mostMentioned = ex3HashtagMining.top10HashTags();
 
     // assert
-    Assert.assertEquals(10, mostMentioned.size());
-    Assert.assertEquals(253, mostMentioned.get(0)._1().intValue());
-    Assert.assertEquals("#DME", mostMentioned.get(0)._2());
+    Assert.assertEquals(10, mostMentioned.count());
+    Assert.assertEquals(253, mostMentioned.first().getLong(1));
+    Assert.assertEquals("#DME", mostMentioned.first().getString(0));
   }
 
 }
