@@ -1,15 +1,11 @@
 package com.handson.spark.core;
 
 
-import com.handson.spark.utils.Tweet;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-import java.util.Map;
 
 import static org.apache.spark.sql.functions.col;
 

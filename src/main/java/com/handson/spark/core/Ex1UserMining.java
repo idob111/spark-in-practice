@@ -1,15 +1,8 @@
 package com.handson.spark.core;
 
 import com.handson.spark.utils.LoadJsonData;
-import com.handson.spark.utils.Parse;
-import com.handson.spark.utils.Tweet;
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
 
 import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.collect_list;
