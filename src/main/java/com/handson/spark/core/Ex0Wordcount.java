@@ -46,9 +46,9 @@ public class Ex0Wordcount {
 
     }
 
-    private Dataset<String> wordDataset() {
+    public Dataset<Row> wordDataset() {
         return loadData().as(Encoders.STRING())
-                .flatMap(line -> Arrays.asList(line.split(" ")).iterator(), Encoders.STRING());
+                .flatMap(line -> Arrays.asList(line.split(" ")).iterator(), Encoders.STRING()).toDF();
     }
 
     public Long wordCount() {
@@ -61,8 +61,8 @@ public class Ex0Wordcount {
      */
     public Dataset<Row> filterOnWordCount() {
 
-       return wordDataset().groupBy("value") //<k, iter(V)>
-                .count()
+       return wordDataset().groupBy("value")
+                .count().where(col("count").gt(4))
                 .toDF("word","count").sort(desc("count"));
 
     }
