@@ -1,5 +1,6 @@
 package com.handson.spark.core;
 
+import com.handson.spark.utils.LoadJsonData;
 import com.handson.spark.utils.Parse;
 import com.handson.spark.utils.Tweet;
 import org.apache.spark.SparkConf;
@@ -33,29 +34,13 @@ import static org.apache.spark.sql.functions.collect_list;
  */
 public class Ex1UserMining {
 
-    private static String pathToFile = "data/reduced-tweets.json";
-
-    /**
-     *  Load the data from the json file and return an RDD of Tweet
-     */
-    private Dataset<Row> loadData() {
-      // Create spark configuration and spark context
-
-        SparkSession conf = new SparkSession
-                .Builder()
-                .appName("Tweet")
-                .master("local[*]").getOrCreate(); // here local mode. And * means you will use as much as you have cores.
-
-        Dataset<Row> tweets=conf.read().json(pathToFile);
-
-        return tweets;
-    }
+    private String pathToFile = "data/reduced-tweets.json";
 
     /**
      *   For each user return all his tweets
      */
     public Dataset<Row> tweetsByUser() {
-      Dataset<Row> tweets = loadData();
+      Dataset<Row> tweets = LoadJsonData.loadData(pathToFile);
 
       Dataset<Row> tweetsByUser=tweets.groupBy(col("user")).agg(collect_list(col("text")));
 
@@ -66,7 +51,7 @@ public class Ex1UserMining {
      *  Compute the number of tweets by user
      */
     public Dataset<Row> tweetByUserNumber() {
-      Dataset<Row> tweets = loadData();
+      Dataset<Row> tweets = LoadJsonData.loadData(pathToFile);
 
       Dataset<Row> tweetsByUser=tweets.groupBy(col("user")).count();
 
